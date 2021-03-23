@@ -1,0 +1,39 @@
+- hosts: frontend
+  gather_facts: no
+  tasks: 
+     - name: installing haproxy software
+       package: 
+         name: "haproxy"
+         state: "present"
+
+     - name: copying conf. pages
+       copy: 
+         src: /root/haproxy/haproxy.cfg
+         dest: /etc/haproxy/haproxy.cfg
+
+     - name: starting haproxy services
+       service:
+        name: haproxy
+        state: restarted
+     - name: stoping firewall
+       firewalld:
+          service: http
+          permanent: yes
+          state: enabled
+- hosts: backend 
+  gather_facts: no
+  tasks: 
+     - name: Installing httpd software
+       package:
+          name: httpd
+          state: present
+
+     - name: copying web pages
+       copy: 
+         src: /root/haproxy/hello.html
+         dest: /var/www/html/
+
+     - name: starting httpd services
+       service:
+        name: httpd
+        state: restarted
